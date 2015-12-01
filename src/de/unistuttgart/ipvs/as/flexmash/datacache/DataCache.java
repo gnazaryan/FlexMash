@@ -52,7 +52,7 @@ public class DataCache {
 
 			return data;
 
-		} catch (UnknownHostException | JSONException e) {
+		} catch (JSONException | UnknownHostException e) {
 			e.printStackTrace();
 		}
 
@@ -89,7 +89,7 @@ public class DataCache {
 			}
 			return key;
 
-		} catch (UnknownHostException | JSONException e) {
+		} catch (JSONException | UnknownHostException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -102,15 +102,16 @@ public class DataCache {
 	 *            the key of the data to be removed
 	 */
 	public static void removeData(String key) {
-		MongoClient mongoClient;
+		MongoClient mongoClient = null;
 		try {
 			mongoClient = new MongoClient("localhost", 27017);
-			DB db = mongoClient.getDB("mydb");
-			DBCollection coll = db.getCollection(key);
-			coll.drop();
 		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		DB db = mongoClient.getDB("mydb");
+		DBCollection coll = db.getCollection(key);
+		coll.drop();
 	}
 
 	/**

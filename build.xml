@@ -11,9 +11,10 @@
     <path id="classpathDir">
         <pathelement location="bin"/>
     	<pathelement path="WebContent/WEB-INF/lib/java-json.jar"/>
-    	<pathelement path="WebContent/WEB-INF/lib/javax.servlet_3.0.0.jar"/>
+    	<pathelement path="WebContent/WEB-INF/lib/org.ektorp-1.4.2.jar"/>
+    	<pathelement path="WebContent/WEB-INF/lib/javax.servlet-api-3.0.1.jar"/>
     	<pathelement path="WebContent/WEB-INF/lib/mongo-java-driver-2.13.0.jar"/>
-		<pathelement path="WebContent/WEB-INF/lib/servlet-api.jar"/>
+		<pathelement path="WebContent/WEB-INF/lib/javax.servlet-api-3.0.1.jar"/>
     	<pathelement path="WebContent/WEB-INF/lib/twitter4j-core-4.0.2.jar"/>
 		<pathelement path="WebContent/WEB-INF/lib/lingpipe-4.1.0.jar"/>
     	<pathelement path="WebContent/WEB-INF/lib/json-simple-1.1.1.jar"/>
@@ -52,7 +53,7 @@
 	  	</fileset>
 	  	<classes dir="bin"/>
 	  </war>
-      <copy file="Data_Mashup.war" todir="C:\\Users\\hirmerpl\\Documents\\Promotion\\Implementierungen\\Tools\\apache-tomcat-8.0.23\\webapps"/>
+      <copy file="Data_Mashup.war" todir="C:\\Users\\Grigor\\git\\FlexMash"/>
    </target>
 
 </project>
