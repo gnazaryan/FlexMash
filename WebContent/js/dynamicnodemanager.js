@@ -1,7 +1,38 @@
 var dynamicnodemanager = {
 	initialize: function(Y) {
-		
-		var config = {"nodes":[{"transitions":[],"description":"","name":"start933","required":false,"type":"start","width":40,"height":40,"zIndex":100,"xy":[32,232]},{"transitions":[],"description":"","name":"analytics1445","required":false,"type":"analytics","width":60,"height":60,"zIndex":100,"xy":[674,225],"filtertype":"","filter_criteria":""},{"transitions":[],"description":"","name":"dataSource_twitter2580","required":false,"type":"dataSource_twitter","width":70,"height":70,"zIndex":100,"xy":[198,161],"dataSource_twitterHashtag":""},{"transitions":[],"description":"","name":"dataSource_NYT3133","required":false,"type":"dataSource_NYT","width":70,"height":70,"zIndex":100,"xy":[200,296],"dataSource_NYTName":""},{"transitions":[],"description":"","name":"filter4014","required":false,"type":"filter","width":60,"height":60,"zIndex":100,"xy":[448,243],"filtertype":"","filter_criteria":""}]};
+		var nodes = JSON.parse(localStorage.getItem("customNodes"));
+		var availableFields = [];
+		if (nodes) {
+			for (var i = 0; i < nodes.length; i++) {
+				var node = nodes[i];
+				Y['DiagramNode' + node['name']] = Y.Component.create({
+					NAME: 'diagram-node',
+					config: node['nodes'],
+					ATTRS: {
+						type: {
+							value: node['name']
+						},
+						criteria: {
+							validator: Y.Lang.isString,
+							value: ''
+						}
+					},
+					EXTENDS: Y.DiagramNodeTask,
+					prototype: {
+						initializer: function() {
+							
+						}
+					}
+				});
+				Y.DiagramBuilder.types[node['name']] = Y['DiagramNode' + node['name']];
+				availableFields.push({
+					iconClass: 'diagram-node-start-icon',
+					label: node['name'],
+					type: node['name']
+				});
+			}
+		}
+		return availableFields;
 	},
 	addNewNode: function(){
 		alert("TODO add new node");

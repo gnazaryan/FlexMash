@@ -1,42 +1,6 @@
 var application = {
 	luncher: function(Y) {
-		snm.initialize(Y);
-		dnm.initialize(Y);
-
-		var availableFields = [{
-            iconClass: 'diagram-node-start-icon',
-            label: 'Start',
-            type: 'start'
-        }, {
-            iconClass: 'diagram-node-end-icon',
-            label: 'End',
-            type: 'end'
-        }, {
-            iconClass: 'diagram-node-merge-icon',
-            label: 'Merge',
-            type: 'merge'
-        },{
-            iconClass: 'diagram-node-analytics-icon',
-            label: 'Analytics',
-            type: 'analytics'
-        },{
-            iconClass: 'diagram-node-filter-icon',
-            label: 'Filter',
-            type: 'filter'
-        }, {
-            iconClass: 'diagram-node-dataSource_twitter-icon',
-            label: 'Twitter',
-            type: 'dataSource_twitter'
-        }, {
-            iconClass: 'diagram-node-dataSource_NYT-icon',
-            label: 'NYT',
-            type: 'dataSource_NYT'
-        }, {
-			id: 'customNode',
-            iconClass: 'diagram-node-customNode-icon',
-            label: 'Custom',
-            type: 'customNode'
-        }];
+		var availableFields = snm.initialize(Y).concat(dnm.initialize(Y));
 
         diagram = new Y.DiagramBuilder({
             availableFields: availableFields,
@@ -156,18 +120,59 @@ var application = {
             }
         );
 		*/
-
-		Y.one('#availableFields_field_customNode').on(
-            'click', 
-            function() {
-				var config = diagram.toJSON();
-				if (config.nodes.length > 0) {
-					app.alertMSG(JSON.stringify(config), 'alert-info');					
-				} else {
-					app.alertMSG('Please make sure the diagram is configured correctly', 'alert-info');
+		app.addCustomNodeForm = Ext.create('Ext.form.Panel', {
+			border: false,
+			defaultType: 'textfield',
+			items: [{
+				fieldLabel: 'Node Name',
+				name: 'nodeName',
+				allowBlank: false
+			},{
+				fieldLabel: 'Icon URL',
+				name: 'iconURL',
+				allowBlank: false
+			}]
+		});
+		app.addCustomNodeWindow = Ext.create('widget.window', {
+			title: 'Add new node',
+			closable: true,
+			closeAction: 'hide',
+			width: 280,
+			buttons: [{
+				text: 'Reset',
+				handler: function() {
+					this.up('form').getForm().reset();
 				}
+			}, {
+				text: 'Submit',
+				formBind: true,
+				handler: function() {
+					var form = this.up('form').getForm();
+					if (form.isValid()) {
+					}
+				}
+			}],
+			height: 200,
+			items: [app.addCustomNodeForm]
+		});
+		app.customNode = Ext.get('availableFields_field_customNode');
+		app.diagram = document.getElementsByClassName("property-builder-canvas")[0];
+		if (app.diagram == null) {
+			alert('Check the code inside application.js app.diagram = document.getElementsByClassName("property-builder-canvas")[0];, app.diagram must not be null');
+		} else {
+			app.diagram.firstChild.style.overflow = 'hidden';
+		}
+		app.customNode.addListener('click', 
+			function() {
+				app.addCustomNodeWindow.show();
+			}
+		);
+		/*Y.one('#availableFields_field_customNode').on(
+            'click',
+            function() {
+				app.addCustomNodeWindow.showAt(100, 300);
             }
-        );
+        );*/
         Y.one('#postButton').on(
             'click', 
             function() {
@@ -236,4 +241,4 @@ var application = {
 	}
 };
 var app = application;
-YUI().use('aui-io-request', 'aui-diagram-builder', 'aui-button', 'aui-form-builder', application.luncher);
+YUI().use('aui-io-request', 'aui-diagram-builder', 'aui-button', 'aui-form-builder', 'aui-modal', application.luncher);

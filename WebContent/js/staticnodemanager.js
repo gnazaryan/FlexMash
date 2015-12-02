@@ -218,6 +218,41 @@ var staticnodemanager = {
         Y.DiagramBuilder.types['dataSource_twitter'] = Y.DiagramNodeDataSource_twitter;
         Y.DiagramBuilder.types['filter'] = Y.DiagramNodeFilter;
 		Y.DiagramBuilder.types['customNode'] = Y.DiagramNodeCustom;
+		
+		return [{
+            iconClass: 'diagram-node-start-icon',
+            label: 'Start',
+            type: 'start'
+        }, {
+            iconClass: 'diagram-node-end-icon',
+            label: 'End',
+            type: 'end'
+        }, {
+            iconClass: 'diagram-node-merge-icon',
+            label: 'Merge',
+            type: 'merge'
+        },{
+            iconClass: 'diagram-node-analytics-icon',
+            label: 'Analytics',
+            type: 'analytics'
+        },{
+            iconClass: 'diagram-node-filter-icon',
+            label: 'Filter',
+            type: 'filter'
+        }, {
+            iconClass: 'diagram-node-dataSource_twitter-icon',
+            label: 'Twitter',
+            type: 'dataSource_twitter'
+        }, {
+            iconClass: 'diagram-node-dataSource_NYT-icon',
+            label: 'NYT',
+            type: 'dataSource_NYT'
+        }, {
+			id: 'customNode',
+            iconClass: 'diagram-node-customNode-icon',
+            label: 'Custom',
+            type: 'customNode'
+        }];
 	}
 };
 var snm = staticnodemanager;
