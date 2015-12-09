@@ -1,5 +1,6 @@
 var application = {
 	luncher: function(Y) {
+
 		var availableFields = snm.initialize(Y).concat(dnm.initialize(Y));
 
         diagram = new Y.DiagramBuilder({
@@ -44,7 +45,7 @@ var application = {
             ],
             srcNode: '#myDiagramBuilder'
         }).render();
-
+		app.diagramBuilder = diagram;
 		
         /*diagram.connectAll(
           [
@@ -120,35 +121,91 @@ var application = {
             }
         );
 		*/
+
+		
+		app.nodeTypesStore = Ext.create('Ext.data.Store', {
+			fields: ['key', 'name'],
+			data : [
+				{"key":"source", "name":"Source"},
+				{"key":"subflow", "name":"Subflow"}
+			]
+		});
+
+		app.nodeTypesCombo = Ext.create('Ext.form.ComboBox', {
+			fieldLabel: 'Node Types',
+			name: 'nodeType',
+			store: app.nodeTypesStore,
+			queryMode: 'local',
+			displayField: 'name',
+			valueField: 'key',
+			value: 'subflow',
+			editable: false,
+			listeners: {
+				select: function(combo, records, eOpts) {
+					if (records.get('key') == 'source') {
+						app.sourceURLField.setDisabled(false);
+						app.sourceURLField.setVisible(true);
+					} else {
+						app.sourceURLField.setDisabled(true);
+						app.sourceURLField.setVisible(false);
+					}
+				}
+			}
+		});
+
+		app.sourceURLField = Ext.create('Ext.form.field.Text', {
+				fieldLabel: 'Source URL',
+				name: 'sourceURL',
+				allowBlank: false,
+				disabled: true,
+				hidden: true
+		});
+
+		app.iconURLField = Ext.create('Ext.form.field.Text', {
+				fieldLabel: 'Icon URL',
+				name: 'iconURL',
+				value: 'https://cdn0.iconfinder.com/data/icons/robots-expression/512/Robot_18-24.png',
+				allowBlank: false
+		});
+
 		app.addCustomNodeForm = Ext.create('Ext.form.Panel', {
 			border: false,
 			defaultType: 'textfield',
-			items: [{
+			items: [app.nodeTypesCombo, {
 				fieldLabel: 'Node Name',
 				name: 'nodeName',
 				allowBlank: false
-			},{
-				fieldLabel: 'Icon URL',
-				name: 'iconURL',
-				allowBlank: false
-			}]
+			}, app.iconURLField,
+			app.sourceURLField]
 		});
+
 		app.addCustomNodeWindow = Ext.create('widget.window', {
 			title: 'Add new node',
 			closable: true,
 			closeAction: 'hide',
 			width: 280,
 			buttons: [{
-				text: 'Reset',
-				handler: function() {
-					this.up('form').getForm().reset();
-				}
-			}, {
 				text: 'Submit',
 				formBind: true,
 				handler: function() {
-					var form = this.up('form').getForm();
-					if (form.isValid()) {
+					var diagramNodes = diagram.toJSON();
+					diagramNodes = diagramNodes.nodes ? diagramNodes.nodes : [];
+					var values = app.addCustomNodeForm.getValues();
+					if (((diagramNodes.length > 0 && values['nodeType'] == 'subflow') || values['nodeType'] == 'source') && app.addCustomNodeForm.isValid()) {
+						values['id'] = values['nodeName'].replace(/\s/g, '') + Math.floor((Math.random() * 10000000) + 1);
+						values['nodes'] = diagramNodes;
+						app.dynamicNodes.push(values);
+						storage.lastRevision.info = app.dynamicNodes;
+						storage.db.put(storage.lastRevision).then(
+							function (response) {
+								location.reload();
+							}).catch(function (err) {
+								location.reload();
+							}
+						);
+						//app.addDynamicField(Y, values);
+					} else {
+						app.alertMSG('Please configure the Diagram first');
 					}
 				}
 			}],
@@ -167,6 +224,61 @@ var application = {
 				app.addCustomNodeWindow.show();
 			}
 		);
+
+			
+		app.removeNodeContextAction = Ext.create('Ext.Action', {
+			text: 'Remove',
+			icon: 'https://cdn3.iconfinder.com/data/icons/sympletts-free-sampler/128/circle-close-20.png',
+			handler: function(widget, event) {
+				app.removeNodeContextMenu.nodeToRemoveId;
+				debugger;
+				for (var i = 0; i < app.dynamicNodes.length; i++) {
+					var node = app.dynamicNodes[i];
+					if (node['id'] == app.removeNodeContextMenu.nodeToRemoveId) {
+						app.dynamicNodes.splice(i, 1);
+						break;
+					}
+				}
+				storage.lastRevision.info = app.dynamicNodes;
+				storage.db.put(storage.lastRevision).then(
+					function (response) {
+						location.reload();debugger;
+					}).catch(function (err) {
+						location.reload();debugger;
+					}
+				);
+				return false;
+			}
+		});
+
+		app.removeNodeContextMenu = Ext.create('Ext.menu.Menu', {
+			items: [
+				app.removeNodeContextAction
+			]
+		});
+
+		if (app.dynamicNodes) {
+			for (var i = 0; i < app.dynamicNodes.length; i++) {
+				var node = app.dynamicNodes[i];
+				var nodeElement = Ext.get('availableFields_field_' + node['id']);
+				nodeElement.addListener('click',
+					function(e, t, eOpts) {
+						var dom = e.target.parentElement;
+						var id = dom.id.substring(22, dom.id.length);debugger;
+						var nodes = app.getDynamicNodeById(id).nodes;
+						for (var i = 0; i < nodes.length; i++) {
+							app.diagramBuilder.addField(nodes[i]);
+						}
+					}
+				);
+				nodeElement.on("contextmenu",function(event, element){
+					event.stopEvent();
+					app.removeNodeContextMenu.nodeToRemoveId = node['id'] + '';
+					app.removeNodeContextMenu.showAt(event.getXY());
+					return false;
+				})
+			}
+		}
 		/*Y.one('#availableFields_field_customNode').on(
             'click',
             function() {
@@ -217,6 +329,13 @@ var application = {
             }
         );
 	},
+	getDynamicNodeById: function(id) {
+		for (var i =0; i < app.dynamicNodes.length; i++) {
+			if (id = app.dynamicNodes[i]['id']) {
+				return app.dynamicNodes[i];
+			}
+		}
+	},
 	alertMSG: function(content, type) {
 		if (!type) {
 			type = 'alert-warning';
@@ -241,4 +360,4 @@ var application = {
 	}
 };
 var app = application;
-YUI().use('aui-io-request', 'aui-diagram-builder', 'aui-button', 'aui-form-builder', 'aui-modal', application.luncher);
+YUI().use('aui-io-request', 'aui-diagram-builder', 'aui-button', 'aui-form-builder', 'aui-modal', storage.initializeData);
