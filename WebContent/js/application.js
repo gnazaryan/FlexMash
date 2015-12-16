@@ -1,7 +1,42 @@
 var application = {
 	luncher: function(Y) {
+		snm.initialize(Y);
+		dnm.initialize(Y);
 
-		var availableFields = snm.initialize(Y).concat(dnm.initialize(Y));
+		var availableFields = [{
+            iconClass: 'diagram-node-start-icon',
+            label: 'Start',
+            type: 'start'
+        }, {
+            iconClass: 'diagram-node-end-icon',
+            label: 'End',
+            type: 'end'
+        }, {
+            iconClass: 'diagram-node-merge-icon',
+            label: 'Merge',
+            type: 'merge'
+        },{
+            iconClass: 'diagram-node-analytics-icon',
+            label: 'Analytics',
+            type: 'analytics'
+        },{
+            iconClass: 'diagram-node-filter-icon',
+            label: 'Filter',
+            type: 'filter'
+        }, {
+            iconClass: 'diagram-node-dataSource_twitter-icon',
+            label: 'Twitter',
+            type: 'dataSource_twitter'
+        }, {
+            iconClass: 'diagram-node-dataSource_NYT-icon',
+            label: 'NYT',
+            type: 'dataSource_NYT'
+        }, {
+			id: 'customNode',
+            iconClass: 'diagram-node-customNode-icon',
+            label: 'Custom',
+            type: 'customNode'
+        }];
 
         diagram = new Y.DiagramBuilder({
             availableFields: availableFields,
@@ -45,7 +80,7 @@ var application = {
             ],
             srcNode: '#myDiagramBuilder'
         }).render();
-		app.diagramBuilder = diagram;
+
 		
         /*diagram.connectAll(
           [
@@ -122,169 +157,17 @@ var application = {
         );
 		*/
 
-		
-		app.nodeTypesStore = Ext.create('Ext.data.Store', {
-			fields: ['key', 'name'],
-			data : [
-				{"key":"source", "name":"Source"},
-				{"key":"subflow", "name":"Subflow"}
-			]
-		});
-
-		app.nodeTypesCombo = Ext.create('Ext.form.ComboBox', {
-			fieldLabel: 'Node Types',
-			name: 'nodeType',
-			store: app.nodeTypesStore,
-			queryMode: 'local',
-			displayField: 'name',
-			valueField: 'key',
-			value: 'subflow',
-			editable: false,
-			listeners: {
-				select: function(combo, records, eOpts) {
-					if (records.get('key') == 'source') {
-						app.sourceURLField.setDisabled(false);
-						app.sourceURLField.setVisible(true);
-					} else {
-						app.sourceURLField.setDisabled(true);
-						app.sourceURLField.setVisible(false);
-					}
-				}
-			}
-		});
-
-		app.sourceURLField = Ext.create('Ext.form.field.Text', {
-				fieldLabel: 'Source URL',
-				name: 'sourceURL',
-				allowBlank: false,
-				disabled: true,
-				hidden: true
-		});
-
-		app.iconURLField = Ext.create('Ext.form.field.Text', {
-				fieldLabel: 'Icon URL',
-				name: 'iconURL',
-				value: 'https://cdn0.iconfinder.com/data/icons/robots-expression/512/Robot_18-24.png',
-				allowBlank: false
-		});
-
-		app.addCustomNodeForm = Ext.create('Ext.form.Panel', {
-			border: false,
-			defaultType: 'textfield',
-			items: [app.nodeTypesCombo, {
-				fieldLabel: 'Node Name',
-				name: 'nodeName',
-				allowBlank: false
-			}, app.iconURLField,
-			app.sourceURLField]
-		});
-
-		app.addCustomNodeWindow = Ext.create('widget.window', {
-			title: 'Add new node',
-			closable: true,
-			closeAction: 'hide',
-			width: 280,
-			buttons: [{
-				text: 'Submit',
-				formBind: true,
-				handler: function() {
-					var diagramNodes = diagram.toJSON();
-					diagramNodes = diagramNodes.nodes ? diagramNodes.nodes : [];
-					var values = app.addCustomNodeForm.getValues();
-					if (((diagramNodes.length > 0 && values['nodeType'] == 'subflow') || values['nodeType'] == 'source') && app.addCustomNodeForm.isValid()) {
-						values['id'] = values['nodeName'].replace(/\s/g, '') + Math.floor((Math.random() * 10000000) + 1);
-						values['nodes'] = diagramNodes;
-						app.dynamicNodes.push(values);
-						storage.lastRevision.info = app.dynamicNodes;
-						storage.db.put(storage.lastRevision).then(
-							function (response) {
-								location.reload();
-							}).catch(function (err) {
-								location.reload();
-							}
-						);
-						//app.addDynamicField(Y, values);
-					} else {
-						app.alertMSG('Please configure the Diagram first');
-					}
-				}
-			}],
-			height: 200,
-			items: [app.addCustomNodeForm]
-		});
-		app.customNode = Ext.get('availableFields_field_customNode');
-		app.diagram = document.getElementsByClassName("property-builder-canvas")[0];
-		if (app.diagram == null) {
-			alert('Check the code inside application.js app.diagram = document.getElementsByClassName("property-builder-canvas")[0];, app.diagram must not be null');
-		} else {
-			app.diagram.firstChild.style.overflow = 'hidden';
-		}
-		app.customNode.addListener('click', 
-			function() {
-				app.addCustomNodeWindow.show();
-			}
-		);
-
-			
-		app.removeNodeContextAction = Ext.create('Ext.Action', {
-			text: 'Remove',
-			icon: 'https://cdn3.iconfinder.com/data/icons/sympletts-free-sampler/128/circle-close-20.png',
-			handler: function(widget, event) {
-				app.removeNodeContextMenu.nodeToRemoveId;
-				debugger;
-				for (var i = 0; i < app.dynamicNodes.length; i++) {
-					var node = app.dynamicNodes[i];
-					if (node['id'] == app.removeNodeContextMenu.nodeToRemoveId) {
-						app.dynamicNodes.splice(i, 1);
-						break;
-					}
-				}
-				storage.lastRevision.info = app.dynamicNodes;
-				storage.db.put(storage.lastRevision).then(
-					function (response) {
-						location.reload();debugger;
-					}).catch(function (err) {
-						location.reload();debugger;
-					}
-				);
-				return false;
-			}
-		});
-
-		app.removeNodeContextMenu = Ext.create('Ext.menu.Menu', {
-			items: [
-				app.removeNodeContextAction
-			]
-		});
-
-		if (app.dynamicNodes) {
-			for (var i = 0; i < app.dynamicNodes.length; i++) {
-				var node = app.dynamicNodes[i];
-				var nodeElement = Ext.get('availableFields_field_' + node['id']);
-				nodeElement.addListener('click',
-					function(e, t, eOpts) {
-						var dom = e.target.parentElement;
-						var id = dom.id.substring(22, dom.id.length);debugger;
-						var nodes = app.getDynamicNodeById(id).nodes;
-						for (var i = 0; i < nodes.length; i++) {
-							app.diagramBuilder.addField(nodes[i]);
-						}
-					}
-				);
-				nodeElement.on("contextmenu",function(event, element){
-					event.stopEvent();
-					app.removeNodeContextMenu.nodeToRemoveId = node['id'] + '';
-					app.removeNodeContextMenu.showAt(event.getXY());
-					return false;
-				})
-			}
-		}
-		/*Y.one('#availableFields_field_customNode').on(
-            'click',
+		Y.one('#availableFields_field_customNode').on(
+            'click', 
             function() {
-				app.addCustomNodeWindow.showAt(100, 300);
+				var config = diagram.toJSON();
+				if (config.nodes.length > 0) {
+					app.alertMSG(JSON.stringify(config), 'alert-info');					
+				} else {
+					app.alertMSG('Please make sure the diagram is configured correctly', 'alert-info');
+				}
             }
-        );*/
+        );
         Y.one('#postButton').on(
             'click', 
             function() {
@@ -328,13 +211,22 @@ var application = {
                 );
             }
         );
-	},
-	getDynamicNodeById: function(id) {
+		/*
+		getDynamicNodeById: function(id) {
 		for (var i =0; i < app.dynamicNodes.length; i++) {
 			if (id = app.dynamicNodes[i]['id']) {
 				return app.dynamicNodes[i];
 			}
 		}
+		*/
+		//alert(app.dynamicNodes[1]);
+		var node = document.getElementById('availableFields_field_customNode');
+		var element = Ext.get('');
+		var tip = Ext.create('Ext.tip.ToolTip', {
+			target: 'availableFields_field_customNode',
+			html: '<div><img src="js/subflow.png" height=300 width=400></div>'
+		});
+		
 	},
 	alertMSG: function(content, type) {
 		if (!type) {
@@ -360,4 +252,4 @@ var application = {
 	}
 };
 var app = application;
-YUI().use('aui-io-request', 'aui-diagram-builder', 'aui-button', 'aui-form-builder', 'aui-modal', storage.initializeData);
+YUI().use('aui-io-request', 'aui-diagram-builder', 'aui-button', 'aui-form-builder', application.luncher);

@@ -14,10 +14,10 @@
     	<pathelement path="WebContent/WEB-INF/lib/org.ektorp-1.4.2.jar"/>
     	<pathelement path="WebContent/WEB-INF/lib/javax.servlet-api-3.0.1.jar"/>
     	<pathelement path="WebContent/WEB-INF/lib/mongo-java-driver-2.13.0.jar"/>
-		<pathelement path="WebContent/WEB-INF/lib/javax.servlet-api-3.0.1.jar"/>
-    	<pathelement path="WebContent/WEB-INF/lib/twitter4j-core-4.0.2.jar"/>
-		<pathelement path="WebContent/WEB-INF/lib/lingpipe-4.1.0.jar"/>
-    	<pathelement path="WebContent/WEB-INF/lib/json-simple-1.1.1.jar"/>
+    	<pathelement path="WebContent/WEB-INF/lib/servlet-api.jar"/>
+    	 <pathelement path="WebContent/WEB-INF/lib/twitter4j-core-4.0.2.jar"/>
+    	<pathelement path="WebContent/WEB-INF/lib/lingpipe-4.1.0.jar"/>
+    	 <pathelement path="WebContent/WEB-INF/lib/json-simple-1.1.1.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -53,7 +53,7 @@
 	  	</fileset>
 	  	<classes dir="bin"/>
 	  </war>
-      <copy file="Data_Mashup.war" todir="C:\\Users\\Grigor\\git\\FlexMash"/>
+      <copy file="Data_Mashup.war" todir="C:\\Users\\LogMeIn\\apache-tomcat-8.0.28\\webapps"/>
    </target>
 
 </project>
