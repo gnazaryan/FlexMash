@@ -168,6 +168,30 @@ var application = {
 				allowBlank: false
 		});
 
+		app.savedTempletesStore = Ext.create('Ext.data.Store', {
+			fields: ['value', 'name'],
+			data: storage.lastRevision.templetes
+		});
+
+		app.savedTempletes = Ext.create('Ext.form.ComboBox', {
+			fieldLabel: 'Saved Templates',
+			editable: false,
+			store: app.savedTempletesStore,
+			renderTo: 'savedTemplates',
+			queryMode: 'local',
+			displayField: 'name',
+			labelWidth: 150,
+			valueField: 'value',
+			listeners: {
+				select: function( combo, record, eOpts ) {
+					var nodes = Ext.decode(record.get('value'));
+					for (var i = 0; i < nodes.length; i++) {
+						app.diagramBuilder.addField(nodes[i]);
+					}
+				}
+			}
+		});
+
 		app.addCustomNodeForm = Ext.create('Ext.form.Panel', {
 			border: false,
 			defaultType: 'textfield',
@@ -271,7 +295,7 @@ var application = {
 						}
 					}
 				);
-				nodeElement.on("contextmenu",function(event, element){
+				nodeElement.on("contextmenu", function(event, element){
 					event.stopEvent();
 					app.removeNodeContextMenu.nodeToRemoveId = node['id'] + '';
 					app.removeNodeContextMenu.showAt(event.getXY());
@@ -333,6 +357,64 @@ var application = {
             'click',
             function() {
 				app.patternSelectionWindow.show();
+            }
+        );
+		Y.one('#removeTempleteButton').on(
+            'click', 
+            function() {
+				var selection = app.savedTempletes.getSelection();
+				if (selection != null) {
+					app.savedTempletesStore.remove(selection);
+					app.savedTempletes.setSelection(null);
+					storage.lastRevision.templetes = Ext.pluck(app.savedTempletesStore.data.items, 'data');
+					storage.db.put(storage.lastRevision).then(
+						function (response) {
+							app.savedTempletesStore.add({
+								name: text,
+								id: id,
+								value: diagramNodes
+							});
+						}).catch(function (err) {
+							
+						}
+					);
+				}
+			}
+		);
+		Y.one('#saveTempleteButton').on(
+            'click', 
+            function() {
+				var diagramNodes = diagram.toJSON();
+				diagramNodes = diagramNodes.nodes ? diagramNodes.nodes : [];
+				if (diagramNodes.length > 0) {
+					Ext.Msg.prompt('Templete Name', 'Please enter name for templete:', function(btn, text){
+						if (btn == 'ok' && text != ''){
+							if (storage.lastRevision.templetes == null) {
+								storage.lastRevision.templetes = [];
+							}
+							diagramNodes = Ext.encode(diagramNodes);
+							var id = (new Date()).getTime(); 
+							storage.lastRevision.templetes.push({
+								name: text,
+								id: id,
+								value: diagramNodes
+							});
+							storage.db.put(storage.lastRevision).then(
+								function (response) {
+									app.savedTempletesStore.add({
+										name: text,
+										id: id,
+										value: diagramNodes
+									});
+								}).catch(function (err) {
+									
+								}
+							);
+						}
+					});
+				} else {
+					app.alertMSG('Please configure the Diagram first');
+				}
             }
         );
         Y.one('#postButton').on(

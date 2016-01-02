@@ -13,6 +13,11 @@ var storage = {
 		}
 	}),
 	initializeData: function(Y) {
+		/*var mask = new Ext.LoadMask({
+			msg    : 'Please wait...',
+			target : Ext.getBody()
+		});
+		mask.show();*/
 		storage.db.get('nodes', function (err, response) {debugger;
 			if (response != null && response.info) {
 				app.dynamicNodes = response.info;
@@ -21,6 +26,7 @@ var storage = {
 				app.dynamicNodes = [];
 			}
 			application.luncher(Y);
+			//mask.hide();
 		});
 	}
 };
