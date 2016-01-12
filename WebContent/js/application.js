@@ -310,7 +310,7 @@ var application = {
 				fields:['name', 'id'],
 				data:{'items':[
 					{ 'name': 'Time-Critical', 'description':'Description goes here', "id":"timeCritical"},
-					{ 'name': 'Robust', 'description':'Description goes here', "id":"robust"},
+					{ 'name': 'Robust', 'description':'Robust execution engine', "id":"robust"},
 					{ 'name': 'Secure (tbd)', 'description':'Description goes here', "id":"tradeOff"},
 					{ 'name': 'Big Data (tbd)', 'description':'Description goes here', "id":"bigData"}
 				]},
@@ -322,12 +322,32 @@ var application = {
 					}
 				}
 			}),
+			listeners: {
+				select: function(grid, record, index, eOpts) {
+					var patternId = record.get('id');
+					Ext.Ajax.request({
+						url: ('patterns/' + patternId + '.html'),
+						success: function(response) {
+							app.patternDetailPanel.update(response.responseText);
+						},
+						failure: function(response) {
+							app.patternDetailPanel.update('The selected pattern dows not have a detailed description');
+						}
+					});
+				}
+			},
 			columns: [
 				{ text: 'Name',  dataIndex: 'name' },
 				{ text: 'Description',  dataIndex: 'description', flex: 1}
 			]
 		});
-
+		app.patternDetailPanel = Ext.create('Ext.panel.Panel', {
+			region: 'center',
+			title: 'Pattern Details',
+			html: 'Please select a pattern from the left panel',
+			split: true,
+			autoScroll: true
+		});
 		app.patternSelectionViewPort = Ext.create('Ext.panel.Panel', {
 			layout: 'border',
 			items: [{
@@ -337,19 +357,12 @@ var application = {
 				width: 250,
 				items: app.patternGridPanel
 				// could use a TreePanel or AccordionLayout for navigational items
-			}, {
-				region: 'center',
-				title: 'Pattern Details',
-				html: 'Information goes here',
-				split: true,
-				height: 100,
-				minHeight: 100
-			}]
+			}, app.patternDetailPanel]
 		});
 		app.patternSelectionWindow = Ext.create('Ext.window.Window', {
 			title: 'Pattern Selection',
-			height: 400,
-			width: 600,
+			height: 530,
+			width: 800,
 			layout: 'fit',
 			items: app.patternSelectionViewPort
 		});
@@ -415,6 +428,12 @@ var application = {
 				} else {
 					app.alertMSG('Please configure the Diagram first');
 				}
+            }
+        );
+		Y.one('#patterSelection').on(
+            'click',
+            function() {
+				app.patternSelectionWindow.show();
             }
         );
         Y.one('#postButton').on(
