@@ -268,7 +268,7 @@ var application = {
 					function (response) {
 						location.reload();debugger;
 					}).catch(function (err) {
-						location.reload();debugger;
+						location.reload();  //debugger;
 					}
 				);
 				return false;
@@ -282,13 +282,68 @@ var application = {
 		});
 
 		if (app.dynamicNodes) {
+			//loop through dynamic nodes
 			for (var i = 0; i < app.dynamicNodes.length; i++) {
-				var node = app.dynamicNodes[i];
+					var strTable="<div><table border=1>";
+					var node = app.dynamicNodes[i];
+					debugger;
+					//check for subflows
+					if (node.nodeType == 'subflow') {
+						//table of the tooltip
+						strTable=strTable + "<tr>Sub Flow Information:</tr>";
+						for (var strNode in node){
+									if(strNode!='nodes'){
+									strTable=strTable+"<tr bgcolor='#81DAF5'><td>" + strNode +":</td><td>"+ node[strNode]+"</td></tr>";
+								}
+								//loop through the sub nodes
+								else{
+									for(var j=0 ; j<node.nodes.length;j++){
+										var objNodes=node.nodes[j];
+										var strNodesName, strNodesValue ;
+										for(strNodesName in objNodes){
+											//check connections or transitions
+											if(strNodesName=='transitions'){
+												var objTrans=node.nodes[j].transitions;
+												var objTransNodes;
+												strTable=strTable+"<tr bgcolor='#F6E3CE'><td >" + strNodesName +":</td><td>"
+												//loop through the connections of the node
+												for(var k=0 ; k<objTrans.length; k++){
+													objTransNodes=objTrans[k];
+													var strTransName, strTransValue ;
+													for(strTransName in objTransNodes){
+														if(strTransName=='target'){
+															strTransValue = objTransNodes[strTransName] ;
+															strTable=strTable + strTransValue+"</td></tr>";
+														}
+													}
+													strTable=strTable +"</td></tr>";
+												}
+											}
+											else{
+												strNodesValue = objNodes[strNodesName] ;
+												strTable=strTable+"<tr bgcolor='#F6E3CE'><td >" + strNodesName +":</td><td>"+ strNodesValue+"</td></tr>";
+											}
+										}
+									strTable=strTable+"<tr bgcolor='#FE2E2E'><td>  </td><td>  </td></tr>";
+									}
+								}
+						}					
+						
+						strTable=strTable+"<img src='"+node.iconURL+"'></table></div>";
+						strTable=strTable+"</table></div>";		
+						//the tip
+						var tip = Ext.create('Ext.tip.ToolTip', {
+						target: ('availableFields_field_' + node.id),
+						dismissDelay: 0,
+						html:strTable
+						});
+					}
+				
 				var nodeElement = Ext.get('availableFields_field_' + node['id']);
 				nodeElement.addListener('click',
 					function(e, t, eOpts) {
 						var dom = e.target.parentElement;
-						var id = dom.id.substring(22, dom.id.length);debugger;
+						var id = dom.id.substring(22, dom.id.length);  //debugger;
 						var nodes = app.getDynamicNodeById(id).nodes;
 						for (var i = 0; i < nodes.length; i++) {
 							app.diagramBuilder.addField(nodes[i]);
