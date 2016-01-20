@@ -305,7 +305,7 @@ var application = {
 											if(strNodesName=='transitions'){
 												var objTrans=node.nodes[j].transitions;
 												var objTransNodes;
-												strTable=strTable+"<tr bgcolor='#F6E3CE'><td >" + strNodesName +":</td><td>"
+												strTable=strTable+"<tr bgcolor='#F6E3CE'><td >" + strNodesName +":</td><td>";
 												//loop through the connections of the node
 												for(var k=0 ; k<objTrans.length; k++){
 													objTransNodes=objTrans[k];
