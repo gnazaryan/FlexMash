@@ -342,12 +342,12 @@ var application = {
 				var nodeElement = Ext.get('availableFields_field_' + node['id']);
 				nodeElement.addListener('click',
 					function(e, t, eOpts) {
-						var dom = e.target.parentElement;
+						/*var dom = e.target.parentElement;
 						var id = dom.id.substring(22, dom.id.length);  //debugger;
 						var nodes = app.getDynamicNodeById(id).nodes;
 						for (var i = 0; i < nodes.length; i++) {
 							app.diagramBuilder.addField(nodes[i]);
-						}
+						}*/
 					}
 				);
 				nodeElement.on("contextmenu", function(event, element){

@@ -103,6 +103,36 @@ var staticnodemanager = {
             }
         });
 
+		Y.DiagramNodeDataSource_facebook = Y.Component.create({
+            NAME: 'diagram-node',
+            ATTRS: {
+                type: {
+                    value: 'dataSource_facebook'
+                }
+            },
+            EXTENDS: Y.DiagramNodeTask,
+            prototype: {
+                initializer: function() {
+                    var instance = this;
+                }
+            }
+        });
+
+		Y.DiagramNodeDataSource_googleplus = Y.Component.create({
+            NAME: 'diagram-node',
+            ATTRS: {
+                type: {
+                    value: 'dataSource_googleplus'
+                }
+            },
+            EXTENDS: Y.DiagramNodeTask,
+            prototype: {
+                initializer: function() {
+                    var instance = this;
+                }
+            }
+        });
+
         Y.DiagramNodeFilter = Y.Component.create({
             NAME: 'diagram-node',
             ATTRS: {
@@ -216,6 +246,8 @@ var staticnodemanager = {
         Y.DiagramBuilder.types['merge'] = Y.DiagramNodeMerge;
         Y.DiagramBuilder.types['dataSource_NYT'] = Y.DiagramNodedataSource_NYT;
         Y.DiagramBuilder.types['dataSource_twitter'] = Y.DiagramNodeDataSource_twitter;
+		Y.DiagramBuilder.types['dataSource_googleplus'] = Y.DiagramNodeDataSource_googleplus;
+		Y.DiagramBuilder.types['dataSource_facebook'] = Y.DiagramNodeDataSource_facebook;
         Y.DiagramBuilder.types['filter'] = Y.DiagramNodeFilter;
 		Y.DiagramBuilder.types['customNode'] = Y.DiagramNodeCustom;
 		
@@ -247,6 +279,14 @@ var staticnodemanager = {
             iconClass: 'diagram-node-dataSource_NYT-icon',
             label: 'NYT',
             type: 'dataSource_NYT'
+        }, {
+            iconClass: 'diagram-node-dataSource_googleplus-icon',
+            label: 'Google+',
+            type: 'dataSource_googleplus'
+        }, {
+            iconClass: 'diagram-node-dataSource_facebook-icon',
+            label: 'Facebook',
+            type: 'dataSource_facebook'
         }, {
 			id: 'customNode',
             iconClass: 'diagram-node-customNode-icon',
