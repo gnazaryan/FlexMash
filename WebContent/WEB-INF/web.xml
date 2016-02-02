@@ -6,11 +6,19 @@
   </welcome-file-list>
   <servlet>
     <servlet-name>Data_Mashup</servlet-name>
-    <servlet-class>de.uni_stuttgart.ipvs.as.data_mashup.servlet.web_handler.ClientCommunicationServlet</servlet-class>
+    <servlet-class>de.unistuttgart.ipvs.as.flexmash.servlet.web.ClientCommunicationServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Data_Mashup</servlet-name>
     <url-pattern>/DataMashup/</url-pattern>
+  </servlet-mapping>
+    <servlet>
+    <servlet-name>Data_Mock</servlet-name>
+    <servlet-class>de.unistuttgart.ipvs.as.flexmash.servlet.web.MockDataServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Data_Mock</servlet-name>
+    <url-pattern>/DataMock/</url-pattern>
   </servlet-mapping>
   <servlet>
     <display-name>Apache-Axis Servlet</display-name>

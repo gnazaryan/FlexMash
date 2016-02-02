@@ -493,7 +493,54 @@ var application = {
         );
         Y.one('#postButton').on(
             'click', 
-            function() {
+            function() {alert();
+				var values = diagram.toJSON();
+				var inQuery = '';
+				var inQuery1 = '';
+				if (values.nodes) {
+					var nodes = values.nodes;
+					for (var i = 0; i < nodes.length;i++) {
+						var node = nodes[i];
+						if (node.type == 'dataSource_googleplus') {
+							inQuery = node.dataSource_googleplusKey;
+						}
+						if (node.type == 'dataSource_facebook') {
+							inQuery1 = node.dataSource_facebookKey;
+						}
+					}
+				}
+				var url = '/Data_Mashup/DataMock?inQuery=' + (inQuery + '&inQuery1=' + inQuery1);
+				Ext.create('Ext.window.Window', {
+					title: 'Result',
+					height: 400,
+					width: 600,
+					layout: 'fit',
+					items: Ext.create('Ext.grid.Panel', {
+						 store: Ext.create('Ext.data.Store', {
+							fields: ['id', 'lastName', 'firstName', 'link'],
+							autoLoad: true,
+							proxy: {
+								type: 'ajax',
+								url: url,
+								reader: {
+									type: 'json'
+								}
+							 },
+							autoLoad: true
+						 }),
+						columns: [
+							{ text: 'ID',  dataIndex: 'id' },
+							{ text: 'Last Name', dataIndex: 'lastName'},
+							{ text: 'First Name', dataIndex: 'firstName' },
+							{ text: 'Link', dataIndex: 'link', flex: 1, 
+								renderer: function(value, metaData, record, row, col, store, gridView) {
+									return '<a href="' + value + '" target="_blank"><img border="0" alt="W3Schools" src="' + ((value.indexOf('google') > 0)? 'https://cdn3.iconfinder.com/data/icons/free-social-icons/67/google_circle_color-24.png': 'https://cdn3.iconfinder.com/data/icons/free-social-icons/67/facebook_circle_color-24.png') + '" width="24" height="24"></a>';
+								}
+							}
+						]
+					})
+				}).show();
+				/*
 				document.getElementById("alertDiv").hidden = true;
 				document.getElementById("alertDiv2").hidden = true;
 
@@ -531,7 +578,7 @@ var application = {
                             }
                         }
                     }
-                );
+                );*/
             }
         );
 	},

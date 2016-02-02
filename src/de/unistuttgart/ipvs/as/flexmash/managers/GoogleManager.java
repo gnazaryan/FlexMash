@@ -50,6 +50,7 @@ public class GoogleManager {
 	        		user1.put("midleName", midleName);
 	        		user1.put("gender", user.getString("objectType"));
 	        		user1.put("bio", "TODO");
+	        		user1.put("link", user.getString("url"));
 	        		users1.put(user1);
 	        	}
 	        }

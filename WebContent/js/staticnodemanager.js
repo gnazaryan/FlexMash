@@ -103,18 +103,34 @@ var staticnodemanager = {
             }
         });
 
+
 		Y.DiagramNodeDataSource_facebook = Y.Component.create({
             NAME: 'diagram-node',
             ATTRS: {
                 type: {
                     value: 'dataSource_facebook'
+                },
+                dataSource_facebookKey: {
+                    validator: Y.Lang.isString,
+                    value: ''
                 }
             },
             EXTENDS: Y.DiagramNodeTask,
             prototype: {
                 initializer: function() {
                     var instance = this;
-                }
+					this.SERIALIZABLE_ATTRS.push('dataSource_facebookKey');
+                },
+				getPropertyModel: function () {
+					var instance = this;
+					var model = Y.DiagramNodeDataSource_facebook.superclass.getPropertyModel.apply(instance, arguments);
+						model.splice(0, 1);
+						model.push({
+							attributeName: 'dataSource_facebookKey',
+							name: 'Keywords'
+						});
+					return model;
+				}
             }
         });
 
@@ -123,13 +139,28 @@ var staticnodemanager = {
             ATTRS: {
                 type: {
                     value: 'dataSource_googleplus'
+                },
+                dataSource_googleplusKey: {
+                    validator: Y.Lang.isString,
+                    value: ''
                 }
             },
             EXTENDS: Y.DiagramNodeTask,
             prototype: {
                 initializer: function() {
                     var instance = this;
-                }
+				    this.SERIALIZABLE_ATTRS.push('dataSource_googleplusKey');
+                },
+				getPropertyModel: function () {
+					var instance = this;
+					var model = Y.DiagramNodeDataSource_googleplus.superclass.getPropertyModel.apply(instance, arguments);
+						model.splice(0, 1);
+						model.push({
+							attributeName: 'dataSource_googleplusKey',
+							name: 'Keywords'
+						});
+					return model;
+				}
             }
         });
 
