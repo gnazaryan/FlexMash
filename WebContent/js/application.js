@@ -350,12 +350,14 @@ var application = {
 						}*/
 					}
 				);
-				nodeElement.on("contextmenu", function(event, element){
-					event.stopEvent();
-					app.removeNodeContextMenu.nodeToRemoveId = node['id'] + '';
+				nodeElement.dom.setAttribute('name', (node['id'] + ''));
+				nodeElement.on("contextmenu", function(event, element) {
+					event.stopEvent();debugger;
+					var id = element.getAttribute('name');
+					app.removeNodeContextMenu.nodeToRemoveId = id; 
 					app.removeNodeContextMenu.showAt(event.getXY());
 					return false;
-				})
+				});
 			}
 		}
 		
