@@ -350,10 +350,10 @@ var application = {
 						}*/
 					}
 				);
-				nodeElement.dom.setAttribute('name', (node['id'] + ''));
+				nodeElement.dom.childNodes[0].setAttribute('name', (node['id'] + ''));
 				nodeElement.on("contextmenu", function(event, element) {
 					event.stopEvent();debugger;
-					var id = element.getAttribute('name');
+					var id = element.childNodes[0].getAttribute('name');alert(id);
 					app.removeNodeContextMenu.nodeToRemoveId = id; 
 					app.removeNodeContextMenu.showAt(event.getXY());
 					return false;
