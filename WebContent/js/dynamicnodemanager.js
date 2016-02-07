@@ -1,9 +1,11 @@
 var dynamicnodemanager = {
 	initialize: function(Y) {
 		var availableFields = [];
+		//check and see if there are dynamic nodes to be created
 		if (app.dynamicNodes) {
 			for (var i = 0; i < app.dynamicNodes.length; i++) {
 				var node = app.dynamicNodes[i];
+				//Define a namespace for the dynamic node ad characterize it
 				Y['DiagramNode' + node['id']] = Y.Component.create({
 					NAME: 'diagram-node',
 					config: node['nodes'],
@@ -23,6 +25,7 @@ var dynamicnodemanager = {
 						}
 					}
 				});
+				//Define the mapings dynamically and add the new node to available fields to be preocessed by application
 				Y.DiagramBuilder.types[node['id']] = Y['DiagramNode' + node['id']];
 				availableFields.push({
 					id: node['id'],
@@ -30,6 +33,7 @@ var dynamicnodemanager = {
 					label: node['nodeName'],
 					type: node['id']
 				});
+				//Add CSS rules to the document for the newly created node types
 				dnm.addNodeCSSClass(node['id'], node['iconURL']);
 			}
 		}
@@ -38,6 +42,7 @@ var dynamicnodemanager = {
 	addNewNode: function() {
 		alert("TODO add new node");
 	},
+	//append a style elemet to the document for newly created node type 
 	addNodeCSSClass: function(name, imageURL) {
 		var style = document.createElement('style');
 		style.type = 'text/css';

@@ -1,8 +1,10 @@
 var application = {
 	luncher: function(Y) {
 
+		//Initialize the static nodes frm Staticnodemanager.js
 		var availableFields = snm.initialize(Y).concat(dnm.initialize(Y));
 
+		//make the diagram for Aloye UI
         diagram = new Y.DiagramBuilder({
             availableFields: availableFields,
             boundingBox: '#myDiagramContainer',
@@ -122,7 +124,7 @@ var application = {
         );
 		*/
 
-		
+		//Store for Node types combo box
 		app.nodeTypesStore = Ext.create('Ext.data.Store', {
 			fields: ['key', 'name'],
 			data : [
@@ -131,6 +133,7 @@ var application = {
 			]
 		});
 
+		//node type combo box initialization
 		app.nodeTypesCombo = Ext.create('Ext.form.ComboBox', {
 			fieldLabel: 'Node Types',
 			name: 'nodeType',
@@ -153,6 +156,7 @@ var application = {
 			}
 		});
 
+		//Input field for Source URL, made for creating new nodes window
 		app.sourceURLField = Ext.create('Ext.form.field.Text', {
 				fieldLabel: 'Source URL',
 				name: 'sourceURL',
@@ -161,6 +165,7 @@ var application = {
 				hidden: true
 		});
 
+		//Input field for Icon URL, made for creating new nodes window
 		app.iconURLField = Ext.create('Ext.form.field.Text', {
 				fieldLabel: 'Icon URL',
 				name: 'iconURL',
@@ -168,11 +173,13 @@ var application = {
 				allowBlank: false
 		});
 
+		//Ext js store for saving the templates and connecting to combo box
 		app.savedTempletesStore = Ext.create('Ext.data.Store', {
 			fields: ['value', 'name'],
 			data: storage.lastRevision.templetes
 		});
 
+		//Combo box for showing the templates
 		app.savedTempletes = Ext.create('Ext.form.ComboBox', {
 			fieldLabel: 'Saved Templates',
 			editable: false,
@@ -192,6 +199,7 @@ var application = {
 			}
 		});
 
+		//Form panel for inputing new node information
 		app.addCustomNodeForm = Ext.create('Ext.form.Panel', {
 			border: false,
 			defaultType: 'textfield',
@@ -203,6 +211,7 @@ var application = {
 			app.sourceURLField]
 		});
 
+		//A window for adding embding the form panel for creating new node
 		app.addCustomNodeWindow = Ext.create('widget.window', {
 			title: 'Add new node',
 			closable: true,
@@ -212,6 +221,8 @@ var application = {
 				text: 'Submit',
 				formBind: true,
 				handler: function() {
+					//get the nodes designed inside the diagram and check if it is not empty
+					//if valid save to the database
 					var diagramNodes = diagram.toJSON();
 					diagramNodes = diagramNodes.nodes ? diagramNodes.nodes : [];
 					var values = app.addCustomNodeForm.getValues();
@@ -220,6 +231,7 @@ var application = {
 						values['nodes'] = diagramNodes;
 						app.dynamicNodes.push(values);
 						storage.lastRevision.info = app.dynamicNodes;
+						//Save the data to the database
 						storage.db.put(storage.lastRevision).then(
 							function (response) {
 								location.reload();
@@ -236,6 +248,8 @@ var application = {
 			height: 200,
 			items: [app.addCustomNodeForm]
 		});
+
+		//add click listener for the custom node to show new node creation window
 		app.customNode = Ext.get('availableFields_field_customNode');
 		app.diagram = document.getElementsByClassName("property-builder-canvas")[0];
 		if (app.diagram == null) {
@@ -249,13 +263,13 @@ var application = {
 			}
 		);
 
-			
+		//The action definition of contex menu for removing the node on right click
 		app.removeNodeContextAction = Ext.create('Ext.Action', {
 			text: 'Remove',
 			icon: 'https://cdn3.iconfinder.com/data/icons/sympletts-free-sampler/128/circle-close-20.png',
 			handler: function(widget, event) {
+				//get the node inside the panels ad remove the choosen one
 				app.removeNodeContextMenu.nodeToRemoveId;
-				debugger;
 				for (var i = 0; i < app.dynamicNodes.length; i++) {
 					var node = app.dynamicNodes[i];
 					if (node['id'] == app.removeNodeContextMenu.nodeToRemoveId) {
@@ -266,15 +280,16 @@ var application = {
 				storage.lastRevision.info = app.dynamicNodes;
 				storage.db.put(storage.lastRevision).then(
 					function (response) {
-						location.reload();debugger;
+						location.reload();
 					}).catch(function (err) {
-						location.reload();  //debugger;
+						location.reload();
 					}
 				);
 				return false;
 			}
 		});
 
+		//The context menu for the right click over the dynamic nodes
 		app.removeNodeContextMenu = Ext.create('Ext.menu.Menu', {
 			items: [
 				app.removeNodeContextAction
@@ -350,17 +365,20 @@ var application = {
 						}*/
 					}
 				);
+				//Add the show context meu listener to the node
 				nodeElement.dom.childNodes[0].setAttribute('name', (node['id'] + ''));
 				nodeElement.on("contextmenu", function(event, element) {
-					event.stopEvent();debugger;
-					var id = element.childNodes[0].getAttribute('name');alert(id);
+					event.stopEvent();
+					var id = element.childNodes[0].getAttribute('name');
 					app.removeNodeContextMenu.nodeToRemoveId = id; 
 					app.removeNodeContextMenu.showAt(event.getXY());
 					return false;
 				});
 			}
 		}
-		
+
+		//The grid panel for showing the patterns
+		//Ad corespondig field definitions
 		app.patternGridPanel = Ext.create('Ext.grid.Panel', {
 			title: 'Patterns',
 			store: Ext.create('Ext.data.Store', {
@@ -381,6 +399,7 @@ var application = {
 			}),
 			listeners: {
 				select: function(grid, record, index, eOpts) {
+					//on select show the cresponding patterns
 					var patternId = record.get('id');
 					Ext.Ajax.request({
 						url: ('patterns/' + patternId + '.html'),
@@ -398,6 +417,7 @@ var application = {
 				{ text: 'Description',  dataIndex: 'description', flex: 1}
 			]
 		});
+		//The detail panel for patterns to show information inside html files
 		app.patternDetailPanel = Ext.create('Ext.panel.Panel', {
 			region: 'center',
 			title: 'Pattern Details',
@@ -405,6 +425,7 @@ var application = {
 			split: true,
 			autoScroll: true
 		});
+		//view port to nest patern details panel and left grid panel
 		app.patternSelectionViewPort = Ext.create('Ext.panel.Panel', {
 			layout: 'border',
 			items: [{
@@ -416,6 +437,7 @@ var application = {
 				// could use a TreePanel or AccordionLayout for navigational items
 			}, app.patternDetailPanel]
 		});
+		//Window to put the pattern selection related viewport iside and show it
 		app.patternSelectionWindow = Ext.create('Ext.window.Window', {
 			title: 'Pattern Selection',
 			height: 530,
@@ -423,17 +445,20 @@ var application = {
 			layout: 'fit',
 			items: app.patternSelectionViewPort
 		});
+		//o click listener for showing the pattern selection panel
 		Y.one('#patterSelection').on(
             'click',
             function() {
 				app.patternSelectionWindow.show();
             }
         );
+		//onclick listener for removing the choosen templete from combo box
 		Y.one('#removeTempleteButton').on(
             'click', 
             function() {
 				var selection = app.savedTempletes.getSelection();
 				if (selection != null) {
+					//remove the selected templete and update the database
 					app.savedTempletesStore.remove(selection);
 					app.savedTempletes.setSelection(null);
 					storage.lastRevision.templetes = Ext.pluck(app.savedTempletesStore.data.items, 'data');
@@ -451,9 +476,11 @@ var application = {
 				}
 			}
 		);
+		//on click listener for saving the templete
 		Y.one('#saveTempleteButton').on(
             'click', 
             function() {
+				//get the nodes over the diagram and save inside the templetes store
 				var diagramNodes = diagram.toJSON();
 				diagramNodes = diagramNodes.nodes ? diagramNodes.nodes : [];
 				if (diagramNodes.length > 0) {
@@ -469,6 +496,7 @@ var application = {
 								id: id,
 								value: diagramNodes
 							});
+							//update the innformation inside the database
 							storage.db.put(storage.lastRevision).then(
 								function (response) {
 									app.savedTempletesStore.add({
@@ -487,15 +515,12 @@ var application = {
 				}
             }
         );
-		Y.one('#patterSelection').on(
-            'click',
-            function() {
-				app.patternSelectionWindow.show();
-            }
-        );
+		
+		//On click listener for executing data mashup scenario
         Y.one('#postButton').on(
             'click', 
-            function() {alert();
+            function() {
+				//get the query values from the database
 				var values = diagram.toJSON();
 				var inQuery = '';
 				var inQuery1 = '';
@@ -511,6 +536,7 @@ var application = {
 						}
 					}
 				}
+				//Construct and get the mock data from server
 				var url = '/Data_Mashup/DataMock?inQuery=' + (inQuery + '&inQuery1=' + inQuery1);
 				Ext.create('Ext.window.Window', {
 					title: 'Result',
@@ -584,6 +610,7 @@ var application = {
             }
         );
 	},
+	//returns a dynamic node by ID
 	getDynamicNodeById: function(id) {
 		for (var i =0; i < app.dynamicNodes.length; i++) {
 			if (id = app.dynamicNodes[i]['id']) {
@@ -591,6 +618,7 @@ var application = {
 			}
 		}
 	},
+	//Show alert message with the content and type of alert: Info, Error etc...
 	alertMSG: function(content, type) {
 		if (!type) {
 			type = 'alert-warning';
@@ -615,4 +643,5 @@ var application = {
 	}
 };
 var app = application;
+//Initialize the application and prepare for the luncher
 YUI().use('aui-io-request', 'aui-diagram-builder', 'aui-button', 'aui-form-builder', 'aui-modal', storage.initializeData);

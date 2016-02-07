@@ -1,5 +1,6 @@
 var staticnodemanager = {
 	initialize: function(Y) {
+		//Initialize the Merge node to Aloye UI 
 		Y.DiagramNodeMerge = Y.Component.create({
             NAME: 'diagram-node',
             ATTRS: {
@@ -16,7 +17,6 @@ var staticnodemanager = {
 				//CONTROLS_TEMPLATE: '<div id="ddd" class="' + CSS_DB_CONTROLS + '"></div>',
                 initializer: function() {
                     var instance = this;
-                    
                     this.SERIALIZABLE_ATTRS.push('criteria');
                 },
                 getPropertyModel: function () {
@@ -32,6 +32,7 @@ var staticnodemanager = {
             }
         });
 
+		//Initialize the NYT node to Aloye UI 
         Y.DiagramNodedataSource_NYT = Y.Component.create({
             NAME: 'diagram-node',
             ATTRS: {
@@ -73,6 +74,7 @@ var staticnodemanager = {
             }
         });
 
+	    //Initialize the Twitter node to Aloye UI 
         Y.DiagramNodeDataSource_twitter = Y.Component.create({
             NAME: 'diagram-node',
             ATTRS: {
@@ -103,7 +105,7 @@ var staticnodemanager = {
             }
         });
 
-
+		//Initialize the Facebook node to Aloye UI 
 		Y.DiagramNodeDataSource_facebook = Y.Component.create({
             NAME: 'diagram-node',
             ATTRS: {
@@ -134,6 +136,7 @@ var staticnodemanager = {
             }
         });
 
+		//Initialize the Google plus node to Aloye UI 
 		Y.DiagramNodeDataSource_googleplus = Y.Component.create({
             NAME: 'diagram-node',
             ATTRS: {
@@ -164,6 +167,7 @@ var staticnodemanager = {
             }
         });
 
+		//Initialize the Filter node to Aloye UI 		
         Y.DiagramNodeFilter = Y.Component.create({
             NAME: 'diagram-node',
             ATTRS: {
@@ -209,6 +213,7 @@ var staticnodemanager = {
             }
         });
 
+		//Initialize the Analytics node to Aloye UI 
         Y.DiagramNodeAnalytics = Y.Component.create({
             NAME: 'diagram-node',
             ATTRS: {
@@ -273,6 +278,7 @@ var staticnodemanager = {
                 }
             }
         });
+		//provide the appropriate object with keyword mapping
         Y.DiagramBuilder.types['analytics'] = Y.DiagramNodeAnalytics;
         Y.DiagramBuilder.types['merge'] = Y.DiagramNodeMerge;
         Y.DiagramBuilder.types['dataSource_NYT'] = Y.DiagramNodedataSource_NYT;
@@ -282,6 +288,7 @@ var staticnodemanager = {
         Y.DiagramBuilder.types['filter'] = Y.DiagramNodeFilter;
 		Y.DiagramBuilder.types['customNode'] = Y.DiagramNodeCustom;
 		
+		//return the initialized static nodes to the application, to be created
 		return [{
             iconClass: 'diagram-node-start-icon',
             label: 'Start',

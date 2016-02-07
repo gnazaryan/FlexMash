@@ -1,4 +1,5 @@
 var storage = {
+	//Database driver defined for Cloudnat
 	db: new PouchDB('https://143e3876-46cf-403e-aeac-f332a7185c79-bluemix.cloudant.com/flexmash', {
 		ajax: {
 			cache: false,
@@ -18,13 +19,15 @@ var storage = {
 			target : Ext.getBody()
 		});
 		mask.show();*/
-		storage.db.get('nodes', function (err, response) {debugger;
+		//perform async request to the database and initializ data
+		storage.db.get('nodes', function (err, response) {
 			if (response != null && response.info) {
 				app.dynamicNodes = response.info;
 				storage.lastRevision = response;
 			} else {
 				app.dynamicNodes = [];
 			}
+			//Lunch the application as the data is initialized
 			application.luncher(Y);
 			//mask.hide();
 		});
