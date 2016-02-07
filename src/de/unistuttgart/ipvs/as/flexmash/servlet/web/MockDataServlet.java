@@ -33,9 +33,11 @@ public class MockDataServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+		//Get the query parameter for facebook and google plus
 		String inQuery = req.getParameter("inQuery");
 		String inQuery1 = req.getParameter("inQuery1");
 
+		//Retrive the data from Facebook and Google plus managers
 		FacebookManager fm = new FacebookManager();
 		GoogleManager gm = new GoogleManager();
 		JSONObject fmObject = fm.performQuery(inQuery);
@@ -50,12 +52,15 @@ public class MockDataServlet extends HttpServlet {
 			if (gmObject.has("users") && gmObject.getJSONArray("users") != null) {
 				gmData = gmObject.getJSONArray("users");
 			}
+			//Merge the data with union operator
 			result = merge(fmData, gmData);
 			
+			//Filter the results which are not person
 			result = filter(result);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		//Write the data back
 		PrintWriter out = resp.getWriter();
 		out.println(result.toString());
 	}
